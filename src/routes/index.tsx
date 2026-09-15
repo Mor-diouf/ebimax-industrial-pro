@@ -27,7 +27,7 @@ function Index() {
         <div className="site-container relative flex min-h-[610px] items-center py-16 lg:min-h-[660px]">
           <div className="max-w-2xl">
             <p className="mb-6 flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.2em] text-primary"><span className="h-px w-10 bg-primary" /> Performance sans compromis</p>
-            <h1 className="font-display text-5xl font-black uppercase leading-[0.95] sm:text-6xl lg:text-7xl">Générateurs<br /><span className="text-primary">industriels KPOR</span></h1>
+            <h1 className="font-display text-4xl font-black uppercase leading-[0.95] sm:text-6xl lg:text-7xl">Générateurs<br /><span className="text-primary">industriels KPOR</span></h1>
             <p className="mt-6 max-w-xl text-base leading-7 text-background/75 sm:text-lg">Fiables, robustes et adaptés aux conditions exigeantes de chantier.</p>
             <div className="mt-9 flex flex-wrap gap-3"><Button asChild size="lg" className="h-12 px-6 font-extrabold"><a href={whatsappUrl("Groupe Électrogène KPOR Diesel")} target="_blank" rel="noreferrer"><MessageCircle /> Demander un devis</a></Button><Button asChild variant="outline" size="lg" className="h-12 border-background/30 bg-background/5 text-background hover:bg-background hover:text-foreground"><Link to="/catalog/$slug" params={{ slug: "energie-solaire" }}>Voir les modèles <ArrowRight /></Link></Button></div>
           </div>
