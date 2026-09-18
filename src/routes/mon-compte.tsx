@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, Package, User, MapPin, Phone } from "lucide-react";
+import { LogOut, Package, User, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/mon-compte")({
 
 function MonComptePage() {
   const navigate = useNavigate();
-  const { user, isLoading: authLoading, signOut } = useAuth();
+  const { user, profile, isAdmin, isLoading: authLoading, signOut } = useAuth();
 
   // If not logged in and done loading, redirect to auth
   if (!authLoading && !user) {
@@ -68,12 +68,26 @@ function MonComptePage() {
         
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">Espace Client</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">
+                {isAdmin ? "Espace Administrateur" : "Espace Client"}
+              </p>
+              <Badge variant={isAdmin ? "default" : "secondary"} className="font-mono text-[10px] uppercase font-bold">
+                {isAdmin ? "Admin" : (profile?.role || "Client")}
+              </Badge>
+            </div>
             <h1 className="mt-2 font-display text-3xl font-black uppercase sm:text-4xl">Bonjour, {user.user_metadata?.first_name || 'Client'}</h1>
           </div>
-          <Button variant="outline" onClick={handleLogout} className="text-muted-foreground">
-            <LogOut className="mr-2 size-4" /> Déconnexion
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            {isAdmin && (
+              <Button onClick={() => navigate({ to: "/admin" })} className="bg-primary text-primary-foreground font-bold hover:bg-primary/90">
+                <ShieldCheck className="mr-2 size-4" /> Panneau Administration
+              </Button>
+            )}
+            <Button variant="outline" onClick={handleLogout} className="text-muted-foreground">
+              <LogOut className="mr-2 size-4" /> Déconnexion
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="orders" className="w-full">
@@ -167,6 +181,19 @@ function MonComptePage() {
                   <div>
                     <p className="text-sm text-muted-foreground">Email</p>
                     <p className="font-medium">{user.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Rôle attribué</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant={isAdmin ? "default" : "secondary"} className="font-mono text-xs uppercase font-bold">
+                        {profile?.role || "customer"}
+                      </Badge>
+                      {isAdmin ? (
+                        <span className="text-xs text-muted-foreground">(Accès complet gestion boutique)</span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">(Client standard)</span>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

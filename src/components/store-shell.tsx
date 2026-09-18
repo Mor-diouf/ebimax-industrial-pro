@@ -43,7 +43,7 @@ export function BrandMark() {
 
 export function StoreShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const { user, isLoading } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-foreground text-background">
@@ -98,6 +98,13 @@ export function StoreShell({ children }: { children: ReactNode }) {
                   {isLoading ? "..." : user ? "Mon compte" : "Se connecter"}
                 </Link>
               </Button>
+              {isAdmin && (
+                <Button asChild variant="outline" size="sm" className="hidden font-bold sm:inline-flex border-primary text-primary hover:bg-primary/10">
+                  <Link to="/admin">
+                    <ShieldCheck className="mr-1.5 size-4" /> Admin
+                  </Link>
+                </Button>
+              )}
             </div>
             
             <CartSheet />
@@ -143,9 +150,11 @@ export function StoreShell({ children }: { children: ReactNode }) {
             <Link to={user ? "/mon-compte" : "/auth"} onClick={() => setOpen(false)} className="mobile-nav-link flex items-center">
               <User className="mr-2 size-4" /> {isLoading ? "..." : user ? "Mon compte" : "Se connecter"}
             </Link>
-            <Link to="/admin" onClick={() => setOpen(false)} className="mobile-nav-link">
-              Espace admin
-            </Link>
+            {isAdmin && (
+              <Link to="/admin" onClick={() => setOpen(false)} className="mobile-nav-link flex items-center text-primary font-bold">
+                <ShieldCheck className="mr-2 size-4" /> Espace Admin
+              </Link>
+            )}
           </nav>
         )}
       </header>

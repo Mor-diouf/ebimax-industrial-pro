@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -10,6 +10,8 @@ import {
   Upload,
   ShoppingBag,
   Settings2,
+  ShieldCheck,
+  RefreshCw,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -31,6 +33,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { categories } from "@/lib/catalog";
 import { fetchProducts, stockLabels, uploadProductPhoto, type StockValue } from "@/lib/products";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -57,6 +60,9 @@ const emptyForm = {
 };
 
 function AdminPage() {
+  const navigate = useNavigate();
+  const { user, profile, isAdmin, isLoading: isAuthLoading, refreshProfile } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const queryClient = useQueryClient();
   const [form, setForm] = useState(emptyForm);
   const [specs, setSpecs] = useState<SpecRow[]>([{ label: "", value: "" }]);
@@ -66,6 +72,7 @@ function AdminPage() {
   const { data: items = [], isLoading: isLoadingProducts } = useQuery({
     queryKey: ["admin-products"],
     queryFn: fetchProducts,
+    enabled: !!isAdmin,
   });
 
   // Fetch Orders
@@ -79,6 +86,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
+    enabled: !!isAdmin,
   });
 
   // Product Mutations
@@ -144,6 +152,96 @@ function AdminPage() {
     },
     onError: (error: Error) => toast.error(error.message || "La mise à jour a échoué"),
   });
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/20">
+        <Loader2 className="size-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
+        <Card className="max-w-md w-full text-center p-6 shadow-lg border">
+          <CardHeader>
+            <div className="mx-auto size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2">
+              <ShieldCheck className="size-6" />
+            </div>
+            <CardTitle className="font-display text-2xl font-black uppercase">Espace Administration</CardTitle>
+            <CardDescription>
+              Vous devez être connecté avec un compte administrateur pour accéder à cet espace.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button onClick={() => navigate({ to: "/auth" })} className="w-full">
+              Se connecter
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    const handleCheckRole = async () => {
+      setIsRefreshing(true);
+      await refreshProfile();
+      setIsRefreshing(false);
+      toast.info("Rôle vérifié");
+    };
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
+        <Card className="max-w-lg w-full p-6 shadow-lg border">
+          <CardHeader className="text-center">
+            <div className="mx-auto size-12 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center mb-2">
+              <AlertCircle className="size-6" />
+            </div>
+            <CardTitle className="font-display text-2xl font-black uppercase">Accès restreint</CardTitle>
+            <CardDescription>
+              Vous êtes connecté avec <strong>{user.email}</strong>.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5 text-sm">
+            <div className="rounded-lg border bg-muted/50 p-4 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Rôle actuel dans Supabase :</span>
+                <Badge variant="outline" className="font-mono text-xs font-bold uppercase">
+                  {profile?.role || "customer"}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Ce compte dispose du rôle standard (<code className="font-mono text-primary font-bold">customer</code>). Pour gérer le catalogue et les commandes, votre profil doit avoir le rôle <code className="font-mono text-primary font-bold">admin</code>.
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-2 text-xs">
+              <p className="font-bold text-foreground">Comment modifier votre rôle depuis Supabase ?</p>
+              <ol className="list-decimal list-inside space-y-1.5 text-muted-foreground">
+                <li>Rendez-vous sur votre console Supabase &gt; <strong>Table Editor</strong>.</li>
+                <li>Cliquez sur la table <strong className="text-foreground">profiles</strong>.</li>
+                <li>Localisez la ligne correspondant à votre email (<strong className="text-foreground">{user.email}</strong>).</li>
+                <li>Double-cliquez sur la cellule <strong className="text-foreground">role</strong> et remplacez <code className="bg-background px-1 rounded font-mono">customer</code> par <code className="bg-background px-1 rounded font-mono text-primary font-bold">admin</code>.</li>
+                <li>Cliquez sur le bouton ci-dessous pour rafraîchir immédiatement votre session.</li>
+              </ol>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <Button onClick={handleCheckRole} disabled={isRefreshing} className="flex-1">
+                <RefreshCw className={`mr-2 size-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                Vérifier à nouveau mes droits
+              </Button>
+              <Button onClick={() => navigate({ to: "/mon-compte" })} variant="outline">
+                Mon compte
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const inStockCount = items.filter((i) => i.stock === "in_stock").length;
   const lowStockCount = items.length - inStockCount;
