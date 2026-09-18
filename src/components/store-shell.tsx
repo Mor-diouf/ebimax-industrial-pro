@@ -51,6 +51,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
             {categories.map((category) => (
               <Link key={category.slug} to="/catalog/$slug" params={{ slug: category.slug }} onClick={() => setOpen(false)} className="mobile-nav-link">{category.shortName}</Link>
             ))}
+            <Link to="/admin" onClick={() => setOpen(false)} className="mobile-nav-link">Espace admin</Link>
           </nav>
         )}
       </header>
@@ -59,7 +60,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
         <div className="site-container grid gap-10 py-12 md:grid-cols-[1.2fr_1fr_1fr]">
           <div><BrandMark /><p className="mt-5 max-w-sm text-sm leading-6 text-background/65">{store.tagline}. Des solutions sélectionnées pour les professionnels exigeants.</p></div>
           <div><p className="footer-title">Nos rayons</p><div className="mt-4 grid gap-2 text-sm text-background/65">{categories.slice(0, 4).map((c) => <Link key={c.slug} to="/catalog/$slug" params={{ slug: c.slug }} className="hover:text-primary">{c.name}</Link>)}</div></div>
-          <div><p className="footer-title">Contact direct</p><a href={`tel:${store.phone.replaceAll(" ", "")}`} className="mt-4 flex items-center gap-2 text-sm"><Phone className="size-4 text-primary" />{store.phone}</a><a href={whatsappUrl()} target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-2 text-sm"><MessageCircle className="size-4 text-success" />Écrire sur WhatsApp</a></div>
+          <div><p className="footer-title">Contact direct</p><Link to="/admin" className="mt-4 block text-sm text-background/65 hover:text-primary">Espace admin</Link><a href={`tel:${store.phone.replaceAll(" ", "")}`} className="mt-4 flex items-center gap-2 text-sm"><Phone className="size-4 text-primary" />{store.phone}</a><a href={whatsappUrl()} target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-2 text-sm"><MessageCircle className="size-4 text-success" />Écrire sur WhatsApp</a></div>
         </div>
         <div className="border-t border-background/10"><div className="site-container flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-background/50"><span>© 2026 EBImax Technique</span><span className="flex items-center gap-2"><ShieldCheck className="size-4" /> Matériel professionnel · Assistance dédiée</span></div></div>
       </footer>

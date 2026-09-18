@@ -4,8 +4,10 @@ import { ArrowRight, BadgeCheck, Headphones, MessageCircle, PackageCheck, Wrench
 import heroImage from "@/assets/hero-kpor.jpg";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { categories, products, whatsappUrl } from "@/lib/catalog";
+import { categories, whatsappUrl } from "@/lib/catalog";
 import { storeGallery } from "@/lib/store-gallery";
+import { catalogProducts, fetchProducts } from "@/lib/products";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -46,7 +48,7 @@ function Index() {
       </section>
 
       <section className="border-y border-border bg-muted py-20">
-        <div className="site-container"><div className="mb-10 flex items-end justify-between gap-5"><div><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">Sélection magasin</p><h2 className="mt-2 font-display text-3xl font-black uppercase sm:text-4xl">Produits vedettes</h2></div><span className="hidden text-sm text-muted-foreground md:block">Prix en FCFA · Devis rapides sur WhatsApp</span></div><div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">{products.map((product) => <ProductCard key={product.id} product={product} />)}</div></div>
+        <div className="site-container"><div className="mb-10 flex items-end justify-between gap-5"><div><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">Sélection magasin</p><h2 className="mt-2 font-display text-3xl font-black uppercase sm:text-4xl">Produits vedettes</h2></div><span className="hidden text-sm text-muted-foreground md:block">Prix en FCFA · Devis rapides sur WhatsApp</span></div><div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">{featured.map((product) => <ProductCard key={product.id} product={product} />)}</div></div>
       </section>
 
       <section className="py-20">
