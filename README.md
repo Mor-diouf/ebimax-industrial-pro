@@ -2,7 +2,7 @@
 
 {
 
-  "store_metadata": {
+"store_metadata": {
 
     "name": "EBImax Technique",
 
@@ -14,9 +14,9 @@
 
     "whatsapp_number": "221875865650"
 
-  },
+},
 
-  "navigation": [
+"navigation": [
 
     { "label": "Accueil", "slug": "/", "icon": "home" },
 
@@ -30,9 +30,9 @@
 
     { "label": "Gaz & Froid", "slug": "/catalog/gaz-froid", "featured": false }
 
-  ],
+],
 
-  "hero_banner": {
+"hero_banner": {
 
     "title": "Générateurs Industriels KPOR",
 
@@ -44,9 +44,9 @@
 
     "background_image": "/images/hero-kpor.jpg"
 
-  },
+},
 
-  "categories_grid": [
+"categories_grid": [
 
     {
 
@@ -118,9 +118,9 @@
 
     }
 
-  ],
+],
 
-  "featured_products": [
+"featured_products": [
 
     {
 
@@ -258,7 +258,7 @@
 
     }
 
-  ]
+]
 
 }
 

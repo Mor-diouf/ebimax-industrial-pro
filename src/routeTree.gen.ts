@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MonCompteRouteImport } from './routes/mon-compte'
 import { Route as CatalogSlugRouteImport } from './routes/catalog.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +25,16 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MonCompteRoute = MonCompteRouteImport.update({
+  id: '/mon-compte',
+  path: '/mon-compte',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogSlugRoute = CatalogSlugRouteImport.update({
   id: '/catalog/$slug',
   path: '/catalog/$slug',
@@ -32,30 +44,38 @@ const CatalogSlugRoute = CatalogSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/mon-compte': typeof MonCompteRoute
   '/catalog/$slug': typeof CatalogSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/mon-compte': typeof MonCompteRoute
   '/catalog/$slug': typeof CatalogSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/mon-compte': typeof MonCompteRoute
   '/catalog/$slug': typeof CatalogSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/catalog/$slug'
+  fullPaths: '/' | '/admin' | '/auth' | '/mon-compte' | '/catalog/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/catalog/$slug'
-  id: '__root__' | '/' | '/admin' | '/catalog/$slug'
+  to: '/' | '/admin' | '/auth' | '/mon-compte' | '/catalog/$slug'
+  id: '__root__' | '/' | '/admin' | '/auth' | '/mon-compte' | '/catalog/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
+  MonCompteRoute: typeof MonCompteRoute
   CatalogSlugRoute: typeof CatalogSlugRoute
 }
 
@@ -75,6 +95,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mon-compte': {
+      id: '/mon-compte'
+      path: '/mon-compte'
+      fullPath: '/mon-compte'
+      preLoaderRoute: typeof MonCompteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/catalog/$slug': {
       id: '/catalog/$slug'
       path: '/catalog/$slug'
@@ -88,6 +122,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
+  MonCompteRoute: MonCompteRoute,
   CatalogSlugRoute: CatalogSlugRoute,
 }
 export const routeTree = rootRouteImport

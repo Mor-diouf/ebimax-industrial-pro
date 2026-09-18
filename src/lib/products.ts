@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { products as staticProducts, categories, type CategorySlug } from "@/lib/catalog";
+import { categories, type CategorySlug } from "@/lib/catalog";
 
 export type StockValue = "in_stock" | "low_stock" | "on_demand";
 
@@ -21,6 +21,7 @@ export type DisplayProduct = {
   stockLabel: string;
   description?: string;
   image: string;
+  images: string[];
   specs: ReadonlyArray<readonly [string, string]>;
 };
 
@@ -47,9 +48,11 @@ function parseSpecs(value: unknown): ReadonlyArray<readonly [string, string]> {
     .map(([label, val]) => [String(label), String(val)] as const);
 }
 
-export function toDisplayProduct(row: StoredProduct, signedUrl?: string): DisplayProduct {
+export function toDisplayProduct(row: StoredProduct, signedUrls?: string[]): DisplayProduct {
   const category = categories.find((item) => item.slug === row.category_slug);
   const stock = (row.stock as StockValue) in stockLabels ? (row.stock as StockValue) : "in_stock";
+  const validSignedUrls = (signedUrls?.filter(Boolean) as string[]) || [];
+
   return {
     id: row.id,
     title: row.title,
@@ -61,7 +64,16 @@ export function toDisplayProduct(row: StoredProduct, signedUrl?: string): Displa
     stock,
     stockLabel: stockLabels[stock],
     description: row.description,
-    image: signedUrl ?? row.image_url ?? FALLBACK_IMAGE,
+    image:
+      validSignedUrls.length > 0
+        ? validSignedUrls[0]
+        : (row.image_url?.split(",")[0] ?? FALLBACK_IMAGE),
+    images:
+      validSignedUrls.length > 0
+        ? validSignedUrls
+        : row.image_url
+          ? row.image_url.split(",")
+          : [FALLBACK_IMAGE],
     specs: parseSpecs(row.specs),
   };
 }
@@ -69,7 +81,9 @@ export function toDisplayProduct(row: StoredProduct, signedUrl?: string): Displa
 export async function signPhoto(path: string | null): Promise<string | undefined> {
   if (!path) return undefined;
   if (path.startsWith("http")) return path;
-  const { data } = await supabase.storage.from("product-photos").createSignedUrl(path, 60 * 60 * 24 * 7);
+  const { data } = await supabase.storage
+    .from("product-photos")
+    .createSignedUrl(path, 60 * 60 * 24 * 7);
   return data?.signedUrl;
 }
 
@@ -80,19 +94,25 @@ export async function fetchProducts(): Promise<DisplayProduct[]> {
     .order("created_at", { ascending: false });
   if (error) throw error;
   const rows = (data ?? []) as unknown as StoredProduct[];
-  const signed = await Promise.all(rows.map((row) => signPhoto(row.image_url)));
+
+  const signed = await Promise.all(
+    rows.map(async (row) => {
+      if (!row.image_url) return [];
+      const paths = row.image_url.split(",");
+      const signedPaths = await Promise.all(paths.map((p) => signPhoto(p.trim())));
+      return signedPaths.filter(Boolean) as string[];
+    }),
+  );
+
   return rows.map((row, index) => toDisplayProduct(row, signed[index]));
 }
-
-export const catalogProducts: DisplayProduct[] = staticProducts.map((product) => ({
-  ...product,
-  specs: product.specs.map(([label, value]) => [label, value] as const),
-}));
 
 export async function uploadProductPhoto(file: File): Promise<string> {
   const extension = file.name.split(".").pop() ?? "jpg";
   const path = `${crypto.randomUUID()}.${extension}`;
-  const { error } = await supabase.storage.from("product-photos").upload(path, file, { upsert: false });
+  const { error } = await supabase.storage
+    .from("product-photos")
+    .upload(path, file, { upsert: false });
   if (error) throw error;
   return path;
 }

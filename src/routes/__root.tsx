@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreShell } from "../components/store-shell";
 import { Toaster } from "../components/ui/sonner";
+import { CartProvider } from "../lib/cart-context";
+import { AuthProvider } from "../lib/auth-context";
 
 function NotFoundComponent() {
   return (
@@ -79,14 +81,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "EBImax Technique" },
-      { name: "description", content: "Équipements industriels et outillage professionnel au Sénégal." },
-      { name: "author", content: "EBImax Technique" },
-      { property: "og:title", content: "EBImax Technique" },
-      { property: "og:description", content: "Équipements industriels et outillage professionnel au Sénégal." },
+      { title: "Quincaillerie SOPE S. FALLOU (AB619)" },
+      {
+        name: "description",
+        content:
+          "Quincaillerie générale, équipements électriques, énergie solaire et outillage professionnel à Dakar.",
+      },
+      { name: "author", content: "Quincaillerie SOPE S. FALLOU" },
+      { property: "og:title", content: "Quincaillerie SOPE S. FALLOU" },
+      {
+        property: "og:description",
+        content:
+          "Quincaillerie générale, équipements électriques, énergie solaire et outillage professionnel à Dakar.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -95,7 +104,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap",
+      },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
     ],
   }),
@@ -124,7 +136,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreShell><Outlet /></StoreShell>
+      <AuthProvider>
+        <CartProvider>
+          <StoreShell>
+            <Outlet />
+          </StoreShell>
+        </CartProvider>
+      </AuthProvider>
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
