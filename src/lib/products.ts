@@ -81,10 +81,16 @@ export function toDisplayProduct(row: StoredProduct, signedUrls?: string[]): Dis
 export async function signPhoto(path: string | null): Promise<string | undefined> {
   if (!path) return undefined;
   if (path.startsWith("http")) return path;
-  const { data } = await supabase.storage
+  
+  // Public URL first
+  const { data } = supabase.storage.from("product-photos").getPublicUrl(path);
+  if (data?.publicUrl) return data.publicUrl;
+
+  // Fallback signed URL
+  const signed = await supabase.storage
     .from("product-photos")
     .createSignedUrl(path, 60 * 60 * 24 * 7);
-  return data?.signedUrl;
+  return signed.data?.signedUrl;
 }
 
 export async function fetchProducts(): Promise<DisplayProduct[]> {
@@ -113,6 +119,13 @@ export async function uploadProductPhoto(file: File): Promise<string> {
   const { error } = await supabase.storage
     .from("product-photos")
     .upload(path, file, { upsert: false });
-  if (error) throw error;
+  if (error) {
+    if (error.message?.toLowerCase().includes("bucket not found")) {
+      throw new Error(
+        "Le bucket 'product-photos' n'a pas encore été créé dans Supabase Storage. Veuillez exécuter le script SQL fourni ou créer le bucket 'product-photos' (public) dans votre tableau de bord Supabase."
+      );
+    }
+    throw error;
+  }
   return path;
 }
