@@ -10,9 +10,11 @@
 
     "currency": "FCFA",
 
-    "contact_phone": "+221 875 865 650",
+    "contact_phone": "+221 71 116 91 91",
 
-    "whatsapp_number": "221875865650"
+    "contact_email": "contact@ebimax-industrials.com",
+
+    "whatsapp_number": "221711169191"
 
 },
 

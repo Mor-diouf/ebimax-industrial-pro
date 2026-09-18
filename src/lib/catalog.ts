@@ -6,8 +6,8 @@ import safeImage from "@/assets/product-safe.jpg";
 export const store = {
   name: "Quincaillerie SOPE S. FALLOU",
   tagline: "Équipements, électricité, énergie et quincaillerie générale",
-  phone: "+221 77 619 19 30",
-  whatsapp: "221776191930",
+  phone: "+221 71 116 91 91",
+  whatsapp: "221711169191",
 };
 
 export const categories = [
