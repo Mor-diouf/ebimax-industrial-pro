@@ -175,9 +175,6 @@ export function StoreShell({ children }: { children: ReactNode }) {
           </div>
           <div>
             <p className="footer-title">Contact direct</p>
-            <Link to="/admin" className="mt-4 block text-sm text-background/65 hover:text-primary">
-              Espace admin
-            </Link>
             <a
               href={`tel:${store.phone.replaceAll(" ", "")}`}
               className="mt-4 flex items-center gap-2 text-sm"
