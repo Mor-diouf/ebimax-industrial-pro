@@ -69,7 +69,7 @@ function CatalogPage() {
   const related = matching;
   return (
     <>
-      <section className="relative min-h-[360px] overflow-hidden bg-foreground text-background">
+      <section className="relative min-h-[260px] sm:min-h-[360px] overflow-hidden bg-foreground text-background">
         <img
           src={category.image}
           alt={category.name}
@@ -78,34 +78,34 @@ function CatalogPage() {
           className="absolute inset-0 h-full w-full object-cover opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--foreground)_0%,color-mix(in_oklch,var(--foreground)_75%,transparent)_55%,transparent)]" />
-        <div className="site-container relative flex min-h-[360px] items-end py-12">
+        <div className="site-container relative flex min-h-[260px] sm:min-h-[360px] items-end py-8 sm:py-12">
           <div>
             <Link
               to="/"
-              className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase text-background/70 hover:text-primary"
+              className="mb-4 sm:mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase text-background/70 hover:text-primary transition-colors"
             >
               <ArrowLeft className="size-4" /> Retour à l’accueil
             </Link>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-primary">
+            <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.18em] text-primary">
               Catalogue professionnel
             </p>
-            <h1 className="mt-3 max-w-3xl font-display text-4xl font-black uppercase sm:text-6xl">
+            <h1 className="mt-1.5 sm:mt-3 max-w-3xl font-display text-3xl sm:text-5xl lg:text-6xl font-black uppercase break-words leading-tight">
               {category.name}
             </h1>
-            <p className="mt-4 text-sm text-background/70">
+            <p className="mt-2 sm:mt-4 text-xs sm:text-sm text-background/70">
               {category.count} références disponibles sur demande
             </p>
           </div>
         </div>
       </section>
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <div className="site-container">
-          <div className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+          <div className="mb-6 sm:mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-primary">
                 {displayingRelated ? "À découvrir aussi" : "Dans ce rayon"}
               </p>
-              <h2 className="mt-2 font-display text-3xl font-black uppercase">
+              <h2 className="mt-1 font-display text-2xl sm:text-3xl font-black uppercase">
                 {displayingRelated
                   ? "Notre sélection actuelle"
                   : `${matching.length} produit${matching.length > 1 ? "s" : ""}`}
@@ -118,18 +118,19 @@ function CatalogPage() {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Rechercher un produit, une référence…"
-                className="h-11 bg-card pl-10"
+                className="h-11 bg-card pl-10 text-sm"
               />
             </label>
           </div>
 
-          <div className="mb-8 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="mb-6 sm:mb-8 flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
             {categories.map((c) => (
               <Button
                 key={c.slug}
                 asChild
                 variant={c.slug === category.slug ? "default" : "outline"}
-                className="shrink-0 rounded-full font-bold"
+                className="shrink-0 rounded-full font-bold text-xs sm:text-sm"
+                size="sm"
               >
                 <Link to="/catalog/$slug" params={{ slug: c.slug }}>
                   {c.shortName}
@@ -138,7 +139,7 @@ function CatalogPage() {
             ))}
           </div>
           {related.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {related.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

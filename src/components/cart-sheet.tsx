@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { store } from "@/lib/catalog";
 import { useEffect } from "react";
 
-export function CartSheet() {
+export function CartSheet({ trigger }: { trigger?: React.ReactNode } = {}) {
   const { items, removeItem, updateQuantity, clearCart, totalItems } = useCart();
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -83,14 +83,18 @@ export function CartSheet() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="relative shrink-0">
-          <ShoppingCart className="size-5" />
-          {totalItems > 0 && (
-            <span className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-              {totalItems}
-            </span>
-          )}
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="outline" size="icon" className="relative shrink-0">
+            <ShoppingCart className="size-5" />
+            {totalItems > 0 && (
+              <span className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                {totalItems}
+              </span>
+            )}
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col sm:max-w-md">
         <SheetHeader>
